@@ -2855,7 +2855,7 @@ cargarModelo(carpeta) {
 
             loader.load(
                 // Ruta del archivo OBJ
-                `${rutaBase}modelo.obj`,
+                `${rutaBase}modelo.OBJ`,
 
         // Callback cuando el modelo se ha cargado
         // Callback cuando el modelo se ha cargado
