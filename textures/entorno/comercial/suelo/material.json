@@ -1,0 +1,8 @@
+{
+  "metalness": 0.23,
+  "roughness": 0.3,
+"textureRepeat": {
+        "x": 18,
+        "y": 18
+    }
+}

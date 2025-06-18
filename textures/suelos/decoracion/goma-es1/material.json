@@ -1,0 +1,9 @@
+{
+  "metalness": 0.5,
+  "roughness": 0.4,
+"normalIntensity": 0.5,
+"textureRepeat": {
+        "x": 1,
+        "y": 1
+    }
+}

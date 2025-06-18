@@ -1,0 +1,30 @@
+# 3ds Max Wavefront OBJ Exporter v0.99 - (c)2007 guruware
+# File Created: 09.06.2025 14:13:42
+
+mtllib modelo.mtl
+
+#
+# object Object003
+#
+
+v  6012.2344 6391.0791 652.1084
+v  6044.9805 6391.0786 11754.9248
+v  6044.9805 178.1660 11754.9248
+v  6012.2344 153.8805 652.1074
+# 4 vertices
+
+vn -1.0000 -0.0000 0.0000
+# 1 vertex normals
+
+vt 0.0000 1.0000 0.0000
+vt 1.0000 1.0000 0.0000
+vt 1.0000 0.0039 0.0000
+vt 0.0000 0.0000 0.0000
+# 4 texture coords
+
+o Object003
+g Object003
+usemtl modelo_modelo_modelo_modelo_modelo_modelo_modelo_wire_122038083
+f 1/1/1 2/2/1 3/3/1 4/4/1 
+# 1 polygons
+

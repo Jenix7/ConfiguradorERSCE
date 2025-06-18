@@ -1,0 +1,13 @@
+{
+    "albedo": "Albedo.png",
+    "normal": "Normal.png",
+    "metalness": 0.3,
+    "roughness": 0.05,
+    "envMapIntensity": 0.5,
+    "clearcoat": 0.8,
+    "clearcoatRoughness": 0.05,
+    "textureRepeat": {
+        "x": 1,
+        "y": 1
+    }
+}

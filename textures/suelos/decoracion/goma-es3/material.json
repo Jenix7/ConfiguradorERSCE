@@ -1,0 +1,12 @@
+{
+    "albedo": "Albedo.png",
+    "normal": "Normal.png",
+    "metallic": "0.7",
+    "roughness": "0.5",
+    "ao": "",
+"textureRepeat": {
+        "x": 3,
+        "y": 3
+    }
+"normalIntensity": 2,
+}

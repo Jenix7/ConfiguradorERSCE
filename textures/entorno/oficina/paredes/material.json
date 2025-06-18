@@ -1,0 +1,7 @@
+{
+    "albedo": "Albedo.png",
+    "normal": "Normal.png",
+    "metallic": "0.8",
+    "roughness": "0.5",
+    "ao": ""
+}
