@@ -1,0 +1,3073 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Configurador de Ascensores 3D | ERSCE</title>
+    <meta name="description"
+        content="Diseña y personaliza tu ascensor ideal con nuestro configurador 3D interactivo. Soluciones a medida para cada proyecto.">
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --primary-color: #0b0b5e;
+            --secondary-color: #ffd200;
+            --accent-color: #153082;
+            --text-color: #333;
+            --text-light: #ffffff;
+            --bg-color: #f5f7fa;
+            --bg-dark: #0a0a46;
+            --shadow-sm: 0 2px 5px rgba(0, 0, 0, 0.1);
+            --shadow-md: 0 5px 15px rgba(0, 0, 0, 0.1);
+            --shadow-lg: 0 10px 30px rgba(0, 0, 0, 0.15);
+            --transition-default: all 0.3s ease;
+            --border-radius: 8px;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Roboto', Arial, sans-serif;
+        }
+
+        body {
+            background-color: var(--bg-color);
+            overflow: hidden;
+            color: var(--text-color);
+        }
+
+        .wrapper {
+            position: relative;
+            width: 100%;
+            height: 100vh;
+            overflow: hidden;
+        }
+
+        #loading-fullscreen {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: var(--primary-color);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            z-index: 4000;
+            /* Mayor que el menú inicial */
+            transition: opacity 0.5s ease-in-out;
+        }
+
+        .loader-container {
+            position: relative;
+            width: 150px;
+            height: 150px;
+        }
+
+        .loader-logo {
+            position: absolute;
+            width: 100px;
+            height: 100px;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            z-index: 2;
+        }
+
+        .loader-circle {
+            position: absolute;
+            width: 150px;
+            height: 150px;
+            border: 5px solid transparent;
+            border-top: 5px solid var(--secondary-color);
+            border-radius: 50%;
+            animation: spin 1.5s linear infinite;
+        }
+
+        @keyframes spin {
+            0% {
+                transform: rotate(0deg);
+            }
+
+            100% {
+                transform: rotate(360deg);
+            }
+        }
+
+        .loader-text {
+            margin-top: 30px;
+            color: var(--text-light);
+            font-weight: 300;
+            font-size: 18px;
+            letter-spacing: 2px;
+            animation: pulse 1.5s ease-in-out infinite;
+        }
+
+        @keyframes pulse {
+            0% {
+                opacity: 0.6;
+            }
+
+            50% {
+                opacity: 1;
+            }
+
+            100% {
+                opacity: 0.6;
+            }
+        }
+
+        /* Header */
+        /* Header */
+        .header {
+            position: relative;
+            width: 100%;
+            background-color: var(--primary-color);
+            padding: 15px 0;
+            box-shadow: var(--shadow-md);
+            z-index: 10;
+            /* NO display: none */
+        }
+
+        .fixed-width {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 0 30px;
+        }
+
+        .header-inner {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            /* Cambiado a center para centrar el contenido */
+            position: relative;
+            /* Para posicionamiento absoluto del logo */
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            /* Centrar los elementos del logo */
+        }
+
+        .logo img {
+            height: 50px;
+            margin-right: 15px;
+            position: absolute;
+            /* Posicionamiento absoluto para el logo */
+            left: 0;
+            /* Alineado a la izquierda */
+        }
+
+        .header h1 {
+            font-size: 22px;
+            color: var(--text-light);
+            font-weight: 600;
+            /* Cambiado de 500 a 700 para hacerlo bold */
+            letter-spacing: 1px;
+            text-align: center;
+            /* Centrar el texto */
+            margin: 0 auto;
+            /* Centrado automático */
+            font-family: 'Poppins', sans-serif;
+            /* Cambio a fuente Poppins */
+        }
+
+        .text-yellow {
+            color: var(--secondary-color);
+            /* Usar el amarillo definido en las variables */
+        }
+
+        /* Top Menu Bar */
+        .top-menu-bar {
+            position: relative;
+            width: 100%;
+            background-color: var(--accent-color);
+            z-index: 9;
+            color: var(--text-light);
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+            /* NO display: none */
+        }
+
+        .top-menu-content {
+            display: flex;
+            justify-content: center;
+            /* Cambiado a center para centrar */
+            align-items: center;
+        }
+
+        .top-menu-bar ul {
+            display: flex;
+            list-style: none;
+            padding: 0;
+            margin: 0 auto;
+            /* Añadido auto para centrar */
+            justify-content: center;
+            /* Centrar los elementos de la lista */
+            width: auto;
+            /* Ancho automático en lugar de ocupar todo el espacio */
+        }
+
+        .top-menu-bar li {
+            position: relative;
+        }
+
+        /* Eliminar o reducir los espaciadores */
+        .top-menu-bar .spacer {
+            flex-grow: 0.2;
+            /* Reducido de 1 para dar menos espacio */
+            min-width: 20px;
+            /* Asegura un espacio mínimo */
+        }
+
+        .top-menu-bar span {
+            display: flex;
+            align-items: center;
+            padding: 12px 20px;
+            cursor: pointer;
+            transition: var(--transition-default);
+            color: var(--text-light);
+            font-size: 14px;
+            font-weight: 500;
+        }
+
+        .top-menu-bar span i {
+            margin-right: 8px;
+        }
+
+        .top-menu-bar span:hover {
+            background-color: rgba(255, 255, 255, 0.1);
+            color: var(--secondary-color);
+        }
+
+        .top-menu-bar li ul {
+            display: none;
+            position: absolute;
+            background-color: var(--primary-color);
+            min-width: 220px;
+            box-shadow: var(--shadow-md);
+            flex-direction: column;
+            border-radius: 0 0 var(--border-radius) var(--border-radius);
+            overflow: hidden;
+            transition: transform 0.3s ease;
+            transform-origin: top;
+        }
+
+        .top-menu-bar li:hover ul {
+            display: flex;
+            animation: dropdown 0.3s ease-in-out;
+        }
+
+        @keyframes dropdown {
+            0% {
+                opacity: 0;
+                transform: translateY(-10px);
+            }
+
+            100% {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .top-menu-bar li ul li {
+            padding: 0;
+        }
+
+        .top-menu-bar li ul li span {
+            padding: 12px 20px;
+            display: block;
+            width: 100%;
+            font-size: 13px;
+            transition: var(--transition-default);
+        }
+
+        .top-menu-bar li ul li:hover span {
+            background-color: rgba(255, 255, 255, 0.1);
+            color: var(--secondary-color);
+            padding-left: 25px;
+        }
+
+/* Estilos del menú desplegable de reinicio eliminados - ahora usa popup */
+
+        /* Estilos para los botones del popup de reinicio */
+        #restart-cancel-btn:hover {
+            background-color: #e0e0e0;
+        }
+
+        #restart-confirm-btn:hover {
+            background-color: #153082;
+        }
+
+        /* Contenido principal */
+        .content {
+            position: relative;
+            width: 100%;
+            height: calc(100vh - 114px);
+            overflow: hidden;
+        }
+
+        /* Visor 3D */
+        #visor-3d {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 1;
+            background: linear-gradient(135deg, #f5f7fa 0%, #e9ecef 100%);
+            /* NO opacity: 0 ni visibility: hidden */
+        }
+
+        #visor-3d.active {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        .detail-menu {
+            position: absolute;
+            top: 0;
+            right: -400px;
+            width: 400px;
+            height: auto;
+            opacity: 0;
+            transition: opacity 0.3s ease, right 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            max-height: calc(100vh - 114px);
+            background-color: white;
+            box-shadow: -5px 0 25px rgba(0, 0, 0, 0.1);
+            transition: right 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            z-index: 5;
+            display: flex;
+            flex-direction: column;
+            /* Aseguramos disposición vertical */
+            border-left: 1px solid rgba(0, 0, 0, 0.05);
+            overflow: hidden;
+            /* Prevenimos scroll horizontal */
+        }
+
+        .detail-menu.active {
+            right: 0;
+            opacity: 1;
+        }
+
+        .deploy-button {
+            width: 40px;
+            height: 60px;
+            background-color: var(--primary-color);
+            color: white;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            cursor: pointer;
+            border-radius: 8px 0 0 8px;
+            box-shadow: -3px 0 10px rgba(0, 0, 0, 0.1);
+            position: absolute;
+            /* Volvemos a absolute para que esté relativo al contenedor */
+            top: 50%;
+            transform: translateY(-50%);
+            left: -40px;
+            /* Volvemos al valor original */
+            transition: var(--transition-default);
+            z-index: 8;
+        }
+
+        /* Regla para cuando el menú está cerrado */
+        .detail-menu:not(.active)~.deploy-button {
+            right: 0;
+        }
+
+        .deploy-button:hover {
+            background-color: var(--accent-color);
+            width: 45px;
+            left: -45px;
+        }
+
+        .detail-content {
+            flex-grow: 1;
+            padding: 0;
+            /* Quitamos el padding general */
+            overflow-y: auto;
+            height: 100%;
+            scrollbar-width: thin;
+            scrollbar-color: var(--primary-color) #f1f1f1;
+        }
+
+        /* Añadimos padding al contenido pero no al encabezado */
+        .detail-content>*:not(.detail-header) {
+            padding-left: 15px;
+            padding-right: 15px;
+        }
+
+        /* O alternativamente, una clase para el contenido real */
+        .detail-info {
+            padding: 0 15px;
+        }
+
+        .detail-content::-webkit-scrollbar {
+            width: 6px;
+        }
+
+        .detail-content::-webkit-scrollbar-track {
+            background: #f1f1f1;
+            border-radius: 10px;
+        }
+
+        .detail-content::-webkit-scrollbar-thumb {
+            background: var(--primary-color);
+            border-radius: 10px;
+        }
+
+        .detail-header {
+            background-color: var(--primary-color);
+            color: white;
+            padding: 18px 0;
+            /* Aumentado de 12px a 18px para dar más espacio vertical */
+            margin: 0;
+            /* Sin márgenes */
+            text-align: center;
+            width: 100%;
+            /* Ancho completo */
+            overflow: hidden;
+            /* Prevenimos overflow */
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            /* Sutil separador como en Personalización */
+        }
+
+        .detail-header h2 {
+            font-size: 18px;
+            font-weight: 500;
+            color: white;
+            margin-bottom: 5px;
+        }
+
+        .detail-header p {
+            font-size: 12px;
+            color: rgba(255, 255, 255, 0.8);
+            margin: 0;
+        }
+
+        /* Eliminamos la línea amarilla inferior ya que el menú de personalización no la tiene */
+        .detail-header:after {
+            display: none;
+        }
+
+        .detail-info {
+            padding: 15px 15px 0;
+            /* Añadimos padding superior de 15px */
+        }
+
+        /* O alternativamente, solo para la primera sección */
+        .detail-section:first-child {
+            margin-top: 3px;
+            /* Añadimos margen superior solo a la primera sección */
+        }
+
+        .detail-section {
+            margin-bottom: 20px;
+            /* Mantenemos la separación entre secciones */
+        }
+
+        .detail-section-title {
+            font-size: 16px;
+            font-weight: 500;
+            color: var(--primary-color);
+            margin-bottom: 8px;
+            padding-bottom: 5px;
+            border-bottom: 1px solid #eee;
+            display: flex;
+            align-items: center;
+        }
+
+        /* Comentado - ya no usamos iconos en los títulos
+.detail-section-title i {
+    margin-right: 5px;
+    color: var(--secondary-color);
+    font-size: 14px;
+}
+*/
+
+        .detail-item {
+            display: flex;
+            justify-content: space-between;
+            padding: 5px 0;
+            font-size: 14px;
+            border-bottom: 1px dashed rgba(0, 0, 0, 0.05);
+        }
+
+        .detail-label {
+            color: #666;
+        }
+
+        .detail-value {
+            font-weight: 500;
+            color: var(--text-color);
+        }
+
+        /* Modificamos el estilo general del botón */
+        .button {
+            display: inline-block;
+            padding: 12px 20px;
+            /* Aumentamos el padding vertical e horizontal */
+            background-color: var(--primary-color);
+            color: white;
+            border: none;
+            border-radius: var(--border-radius);
+            cursor: pointer;
+            text-align: center;
+            font-size: 14px;
+            /* Ligeramente más grande */
+            font-weight: 500;
+            letter-spacing: 0.5px;
+            transition: var(--transition-default);
+            position: relative;
+            overflow: hidden;
+            width: 100%;
+            margin-top: 10px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        /* Estilo específico para el botón de PDF */
+        #generar-pdf {
+            margin: 20px 15px 20px;
+            /* Margen superior, horizontal y inferior */
+            width: calc(100% - 30px);
+            /* Ajustamos el ancho para respetar los márgenes laterales */
+            height: 50px;
+            /* Altura fija más alta */
+        }
+
+        .button:hover {
+            background-color: var(--accent-color);
+            transform: translateY(-2px);
+            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
+        }
+
+        .button:active {
+            transform: translateY(0);
+            box-shadow: 0 3px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        .button i {
+            margin-right: 10px;
+        }
+
+        .button:before {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+            transition: all 0.6s;
+        }
+
+        .button:hover:before {
+            left: 100%;
+        }
+
+        .customization-menu-level-1 {
+            position: absolute;
+            top: 0;
+            left: -300px;
+            opacity: 0;
+            transition: opacity 0.3s ease, left 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            width: 300px;
+            height: auto;
+            /* Cambiado de 100% a auto */
+            max-height: calc(100vh - 114px);
+            /* Para evitar que sea más grande que la ventana */
+            background-color: white;
+            box-shadow: 5px 0 25px rgba(0, 0, 0, 0.1);
+            transition: left 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            z-index: 7;
+            overflow-y: auto;
+            scrollbar-width: thin;
+            scrollbar-color: var(--primary-color) #f1f1f1;
+            border-right: 1px solid rgba(0, 0, 0, 0.05);
+        }
+
+        .customization-menu-level-1::-webkit-scrollbar {
+            width: 6px;
+        }
+
+        .customization-menu-level-1::-webkit-scrollbar-track {
+            background: #f1f1f1;
+            border-radius: 10px;
+        }
+
+        .customization-menu-level-1::-webkit-scrollbar-thumb {
+            background: var(--primary-color);
+            border-radius: 10px;
+        }
+
+        .customization-menu-level-1.active {
+            left: 0;
+            opacity: 1;
+        }
+
+
+        .menu-header {
+            padding: 20px;
+            text-align: center;
+            background-color: var(--primary-color);
+            color: white;
+        }
+
+        .menu-header h2 {
+            font-size: 18px;
+            font-weight: 500;
+            margin-bottom: 5px;
+        }
+
+        .menu-header p {
+            font-size: 12px;
+            opacity: 0.8;
+        }
+
+        .customization-menu-level-1 .button-group {
+            padding: 0;
+            border-bottom: 1px solid #f0f0f0;
+        }
+
+        .customization-menu-level-1 .button {
+            display: flex;
+            align-items: center;
+            width: 100%;
+            padding: 14px 18px;
+            background-color: white;
+            color: var(--text-color);
+            border-radius: var(--border-radius);
+            text-align: left;
+            font-size: 14px;
+            font-weight: 400;
+            margin-top: 0;
+            border-left: 3px solid transparent;
+            box-shadow: none;
+        }
+
+        /* Contenedor para el icono - aplicar a AMBOS tipos */
+        .customization-menu-level-1 .button>i:first-child,
+        .customization-menu-level-1 .button>img:first-child {
+            width: 24px !important;
+            min-width: 24px !important;
+            height: 24px !important;
+            margin-right: 12px !important;
+            display: inline-flex !important;
+            align-items: center !important;
+            justify-content: center !important;
+            flex-shrink: 0 !important;
+        }
+
+        /* Específico para iconos Font Awesome */
+        .customization-menu-level-1 .button>i:first-child {
+            color: var(--primary-color);
+            font-size: 20px;
+        }
+
+        /* Específico para imágenes PNG */
+        .customization-menu-level-1 .button>img:first-child {
+            object-fit: contain;
+            vertical-align: middle;
+        }
+
+        /* Quitar margen del material-icons si existe */
+        .customization-menu-level-1 .button .material-icons {
+            margin-right: 0 !important;
+        }
+
+        /* La flecha derecha */
+        .customization-menu-level-1 .button .button-icon-right {
+            margin-left: auto;
+            margin-right: 0;
+            color: #ccc;
+            transition: var(--transition-default);
+        }
+
+        .customization-menu-level-1 .button i {
+            margin-right: 12px;
+            color: var(--primary-color);
+            font-size: 20px;
+        }
+
+        .customization-menu-level-1 .button .material-icons {
+            font-size: 20px;
+        }
+
+        .customization-menu-level-1 .button.active {
+            background-color: rgba(11, 11, 94, 0.05);
+            color: var(--primary-color);
+            font-weight: 500;
+            border-left: 3px solid var(--secondary-color);
+        }
+
+        .customization-menu-level-1 .button:hover:not(.active) {
+            background-color: rgba(245, 247, 250, 0.8);
+            border-left: 3px solid rgba(255, 210, 0, 0.5);
+        }
+
+        .customization-menu-level-1 .spacer {
+            flex-grow: 1;
+        }
+
+        .button-icon-right {
+            margin-left: auto;
+            color: #ccc;
+            transition: var(--transition-default);
+        }
+
+        .customization-menu-level-1 .button:hover .button-icon-right,
+        .customization-menu-level-1 .button.active .button-icon-right {
+            color: var(--primary-color);
+            transform: translateX(3px);
+        }
+
+        /* Modificar los estilos de customization-menu-level-2 */
+        .customization-menu-level-2 {
+            position: absolute;
+            left: 300px;
+            top: 0;
+            width: 400px;
+            height: calc(100vh - 114px);
+            /* Restar altura del header y top menu */
+            max-height: calc(100vh - 114px);
+            background-color: white;
+            box-shadow: 5px 0 25px rgba(0, 0, 0, 0.1);
+            z-index: -1;
+            /* Inicialmente detrás de todo */
+            padding: 0;
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.3s ease;
+            overflow: hidden;
+            /* Ocultar overflow general */
+            scrollbar-width: thin;
+            scrollbar-color: var(--primary-color) #f1f1f1;
+            transform: translateX(-20px);
+            display: none;
+            /* Inicialmente oculto */
+            flex-direction: column;
+            /* Importante para el layout */
+            pointer-events: none;
+            /* No interactuable por defecto */
+        }
+
+        .customization-menu-level-2::-webkit-scrollbar {
+            width: 6px;
+        }
+
+        .customization-menu-level-2::-webkit-scrollbar-track {
+            background: #f1f1f1;
+            border-radius: 10px;
+        }
+
+        .customization-menu-level-2::-webkit-scrollbar-thumb {
+            background: var(--primary-color);
+            border-radius: 10px;
+        }
+
+        .customization-menu-level-2.active {
+            opacity: 1;
+            visibility: visible;
+            transform: translateX(0);
+            z-index: 6;
+            /* Solo activo cuando está visible */
+            display: flex;
+            /* Mostrar cuando está activo */
+            pointer-events: auto;
+            /* Hacer interactuable cuando está activo */
+        }
+
+        .submenu-header {
+            padding: 20px;
+            background-color: var(--accent-color);
+            color: white;
+            position: sticky;
+            top: 0;
+            z-index: 10;
+            flex-shrink: 0;
+            /* No permitir que se encoja */
+        }
+
+        .submenu-header h3 {
+            font-size: 18px;
+            font-weight: 500;
+            margin-bottom: 5px;
+            display: flex;
+            align-items: center;
+        }
+
+        .submenu-header h3 i {
+            margin-right: 10px;
+        }
+
+        .submenu-header p {
+            font-size: 12px;
+            color: rgba(255, 255, 255, 0.8) !important;
+        }
+
+        .submenu-content {
+            padding: 20px;
+            flex: 1;
+            /* Tomar todo el espacio disponible */
+            overflow-y: auto;
+            /* Permitir scroll vertical */
+            overflow-x: hidden;
+            /* Ocultar scroll horizontal */
+            max-height: calc(100vh - 234px);
+        }
+
+        .customization-menu-level-2 .section-title {
+            font-size: 16px;
+            font-weight: 500;
+            color: var(--primary-color);
+            margin: 20px 0 15px;
+            padding-bottom: 8px;
+            border-bottom: 2px solid var(--secondary-color);
+        }
+
+        .customization-menu-level-2 p {
+            margin-bottom: 15px;
+            font-size: 14px;
+            color: #666;
+        }
+
+        .customization-menu-level-2 input[type="text"] {
+            width: 100%;
+            padding: 12px 15px;
+            border: 1px solid #ddd;
+            border-radius: var(--border-radius);
+            margin-bottom: 15px;
+            font-size: 14px;
+            transition: var(--transition-default);
+        }
+
+        .customization-menu-level-2 input[type="text"]:focus {
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 3px rgba(11, 11, 94, 0.1);
+            outline: none;
+        }
+
+        .customization-menu-level-2 input[type="color"] {
+            height: 45px;
+            width: 100%;
+            border: 1px solid #ddd;
+            border-radius: var(--border-radius);
+            cursor: pointer;
+        }
+
+        .customization-menu-level-2 input[type="checkbox"] {
+            margin-right: 10px;
+            accent-color: var(--primary-color);
+            width: 16px;
+            height: 16px;
+        }
+
+        .dimension-controls {
+            display: grid;
+            grid-template-columns: 1fr auto;
+            gap: 10px;
+            align-items: center;
+        }
+
+        .dimension-controls label {
+            font-size: 14px;
+            font-weight: 500;
+            margin-bottom: 5px;
+            display: block;
+            color: var(--text-color);
+        }
+
+        .dimension-input-group {
+            position: relative;
+        }
+
+        .dimension-input-group span {
+            position: absolute;
+            right: 15px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #999;
+            font-size: 12px;
+            pointer-events: none;
+        }
+
+        .input-actions {
+            display: flex;
+            justify-content: flex-end;
+            margin-top: 20px;
+        }
+
+        .input-actions .button {
+            width: auto;
+            margin-top: 0;
+        }
+
+        /* Grids y opciones */
+        .customization-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 15px;
+            margin-bottom: 25px;
+        }
+
+        .option-item {
+            border: 2px solid #eee;
+            border-radius: var(--border-radius);
+            padding: 15px;
+            cursor: pointer;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            transition: all 0.3s;
+            background-color: white;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .option-item:before {
+            content: "";
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            top: 0;
+            left: 0;
+            background: linear-gradient(135deg, rgba(11, 11, 94, 0.05) 0%, rgba(255, 210, 0, 0.05) 100%);
+            opacity: 0;
+            transition: var(--transition-default);
+        }
+
+        .option-item:hover {
+            border-color: var(--primary-color);
+            transform: translateY(-5px);
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.08);
+        }
+
+        .option-item:hover:before {
+            opacity: 1;
+        }
+
+        .option-item.selected {
+            border-color: var(--primary-color);
+            background-color: rgba(11, 11, 94, 0.03);
+        }
+
+        .option-item.selected:after {
+            content: "✓";
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            background-color: var(--primary-color);
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 12px;
+            font-weight: bold;
+        }
+
+        .option-item img {
+            width: 100%;
+            height: 120px;
+            object-fit: cover;
+            margin-bottom: 12px;
+            border-radius: 4px;
+            transition: var(--transition-default);
+        }
+
+        .option-item:hover img {
+            transform: scale(1.05);
+        }
+
+        .option-item span {
+            font-size: 14px;
+            text-align: center;
+            color: var(--text-color);
+            font-weight: 500;
+            position: relative;
+            z-index: 2;
+        }
+
+        /* Secciones plegables */
+        .customization-section {
+            margin-bottom: 15px;
+            background-color: #f8f9fa;
+            border-radius: var(--border-radius);
+            overflow: hidden;
+        }
+
+        .customization-section-header {
+            display: flex;
+            align-items: center;
+            padding: 12px 15px;
+            cursor: pointer;
+            background-color: #f1f3f5;
+            transition: var(--transition-default);
+        }
+
+        .customization-section-header:hover {
+            background-color: #e9ecef;
+        }
+
+        .customization-section-icon {
+            margin-right: 12px;
+            color: var(--primary-color);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 20px;
+            transition: var(--transition-default);
+        }
+
+        .customization-section-title {
+            flex-grow: 1;
+            font-weight: 500;
+            color: var(--text-color);
+        }
+
+        .customization-section-content {
+            padding: 15px;
+            display: none;
+        }
+
+        .customization-section.active .customization-section-icon {
+            transform: rotate(180deg);
+        }
+
+        .customization-section.active .customization-section-content {
+            display: block;
+            animation: fadeIn 0.3s ease;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateX(-50%) translateY(-10px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateX(-50%) translateY(0);
+            }
+        }
+
+        /* Panel de propiedades en modo edición */
+        #panel-propiedades-edicion h3 {
+            margin: 0 0 15px 0;
+            color: #0b0b5e;
+            font-size: 16px;
+            border-bottom: 2px solid #ffd200;
+            padding-bottom: 8px;
+        }
+
+        #panel-propiedades-edicion h4 {
+            margin: 15px 0 10px 0;
+            color: #333;
+            font-size: 14px;
+        }
+
+        #panel-propiedades-edicion input[type="range"] {
+            width: 100%;
+            margin: 5px 0;
+        }
+
+        #panel-propiedades-edicion input[type="color"] {
+            width: 100%;
+            height: 30px;
+            border: 1px solid #ddd;
+            border-radius: 3px;
+            cursor: pointer;
+        }
+
+        #propiedades-contenido p {
+            margin: 8px 0;
+            font-size: 13px;
+        }
+
+        #controles-edicion {
+            margin-top: 20px;
+            padding-top: 15px;
+            border-top: 1px solid #eee;
+        }
+
+        #controles-edicion ul li {
+            margin: 5px 0;
+            color: #666;
+        }
+
+        /* Posicionamiento de pasamanos */
+        .customization-pasamanos-position {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 15px;
+            margin: 20px 0;
+        }
+
+        .position-option {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            text-align: center;
+        }
+
+        .position-icon {
+            width: 60px;
+            height: 60px;
+            background-color: #f1f3f5;
+            border-radius: var(--border-radius);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 10px;
+            position: relative;
+            transition: var(--transition-default);
+        }
+
+        .position-icon img {
+            width: 30px;
+            height: 30px;
+            object-fit: contain;
+        }
+
+        .position-checkbox {
+            position: absolute;
+            opacity: 0;
+            width: 100%;
+            height: 100%;
+            cursor: pointer;
+        }
+
+        .position-checkbox:checked+.position-icon {
+            background-color: var(--primary-color);
+        }
+
+        .position-checkbox:checked+.position-icon img {
+            filter: brightness(0) invert(1);
+        }
+
+        .position-label {
+            font-size: 12px;
+            color: var(--text-color);
+            font-weight: 500;
+        }
+
+        /* Estilos para el popup de selección de objetos */
+        .object-popup {
+            position: absolute;
+            background-color: var(--primary-color);
+            color: white;
+            padding: 10px 15px;
+            border-radius: var(--border-radius);
+            font-size: 14px;
+            pointer-events: none;
+            z-index: 1000;
+            max-width: 250px;
+            box-shadow: var(--shadow-lg);
+            border: 2px solid var(--secondary-color);
+            transform: translateY(-10px);
+            opacity: 0;
+            animation: popupFadeIn 0.3s forwards;
+        }
+
+        @keyframes popupFadeIn {
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* Responsive */
+        /* Estilos para los controles de dimensiones mejorados */
+        .dimension-controls {
+            display: block;
+            margin-bottom: 20px;
+        }
+
+        .dimension-controls>div {
+            width: 100%;
+        }
+
+        .dimension-controls label {
+            font-size: 14px;
+            font-weight: 500;
+            margin-bottom: 8px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            color: var(--text-color);
+        }
+
+        .dimension-controls label span:last-child {
+            font-size: 11px;
+            color: #999;
+            font-weight: normal;
+            font-style: italic;
+        }
+
+        /* Ocultar tooltips ya que no se usarán */
+        .dimension-controls .tooltip {
+            display: none;
+        }
+
+        /* Responsive */
+        @media (max-width: 1200px) {
+            .customization-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+
+        @media (max-width: 992px) {
+            .detail-menu {
+                width: 350px;
+                right: -350px;
+            }
+
+            .customization-menu-level-2 {
+                width: 350px;
+            }
+        }
+
+        @media (max-width: 768px) {
+
+            .detail-menu,
+            .customization-menu-level-1,
+            .customization-menu-level-2 {
+                width: 100%;
+            }
+
+            .customization-menu-level-2.active {
+                left: 0;
+                top: 0;
+                height: 100%;
+            }
+
+            .customization-grid {
+                grid-template-columns: 1fr;
+            }
+
+        }
+
+        /* Animaciones adicionales */
+        @keyframes floatIn {
+            0% {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+
+            100% {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .floating-animation {
+            animation: floatIn 0.5s ease-out forwards;
+        }
+
+        /* Tooltip estilo */
+        .tooltip {
+            position: relative;
+            display: inline-block;
+        }
+
+        .tooltip .tooltip-text {
+            visibility: hidden;
+            width: 200px;
+            background-color: var(--primary-color);
+            color: white;
+            text-align: center;
+            border-radius: 6px;
+            padding: 10px;
+            position: absolute;
+            z-index: 1;
+            bottom: 125%;
+            left: 50%;
+            transform: translateX(-50%);
+            opacity: 0;
+            transition: opacity 0.3s;
+            font-size: 12px;
+            box-shadow: var(--shadow-md);
+        }
+
+        .tooltip .tooltip-text::after {
+            content: "";
+            position: absolute;
+            top: 100%;
+            left: 50%;
+            margin-left: -5px;
+            border-width: 5px;
+            border-style: solid;
+            border-color: var(--primary-color) transparent transparent transparent;
+        }
+
+        .tooltip:hover .tooltip-text {
+            visibility: visible;
+            opacity: 1;
+        }
+
+        /* Estilos para el modo edición */
+        #top-menu-editar-button.active {
+            background-color: rgba(255, 210, 0, 0.2) !important;
+            color: #ffd200 !important;
+        }
+
+        #indicador-modo-edicion {
+            animation: fadeIn 0.3s ease-in;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateX(-50%) translateY(-10px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateX(-50%) translateY(0);
+            }
+        }
+
+        /* Menú inicial de selección - Diseño simplificado */
+
+        .menu-inicial-logo {
+            height: 130px;
+            margin-bottom: 50px;
+        }
+
+        #menu-inicial {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 3000;
+            background: #0b0b5e;
+            display: none;
+            /* Oculto por defecto */
+            align-items: center;
+            justify-content: center;
+            opacity: 0;
+            visibility: hidden;
+            transition: opacity 0.3s ease;
+        }
+
+        .menu-inicial-container {
+            width: 100%;
+            max-width: 800px;
+            padding: 40px;
+            text-align: center;
+            animation: menuInicialEntrada 0.6s ease-out;
+        }
+
+        @keyframes menuInicialEntrada {
+            from {
+                opacity: 0;
+                transform: translateY(-30px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .menu-inicial-header {
+            margin-bottom: 60px;
+        }
+
+        .menu-inicial-header p {
+            color: white;
+            font-size: 24px;
+            font-weight: 200;
+            margin: 0;
+            text-align: center;
+            letter-spacing: 1px;
+        }
+
+        .menu-inicial-opciones {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 40px;
+            max-width: 700px;
+            margin: 0 auto;
+        }
+
+        .menu-inicial-opcion {
+            background: rgba(255, 255, 255, 0.1);
+            border: 2px solid rgba(255, 255, 255, 0.2);
+            border-radius: 20px;
+            padding: 50px 30px;
+            cursor: pointer;
+            transition: all 0.4s ease;
+            backdrop-filter: blur(10px);
+        }
+
+        .menu-inicial-opcion:hover {
+            background: rgba(255, 255, 255, 0.15);
+            border-color: #ffd200;
+            transform: translateY(-10px) scale(1.02);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+        }
+
+        .opcion-icono {
+            width: 90px;
+            height: 90px;
+            margin: 0 auto 25px;
+            background: transparent;
+            border: 3px solid #ffd200;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.4s ease;
+        }
+
+        .menu-inicial-opcion:hover .opcion-icono {
+            background: #ffd200;
+            transform: rotate(360deg);
+        }
+
+        .opcion-icono i {
+            font-size: 40px;
+            color: #ffd200;
+            transition: all 0.4s ease;
+        }
+
+        .menu-inicial-opcion:hover .opcion-icono i {
+            color: #0b0b5e;
+            transform: scale(1.1);
+        }
+
+        .menu-inicial-opcion h3 {
+            font-size: 24px;
+            color: white;
+            margin-bottom: 15px;
+            font-weight: 400;
+            letter-spacing: 1px;
+        }
+
+        .menu-inicial-opcion p {
+            color: rgba(255, 255, 255, 0.8);
+            font-size: 16px;
+            line-height: 1.5;
+            font-weight: 300;
+        }
+
+        @media (max-width: 768px) {
+            .menu-inicial-opciones {
+                grid-template-columns: 1fr;
+                gap: 30px;
+            }
+
+            .menu-inicial-opcion {
+                padding: 40px 25px;
+            }
+
+            .menu-inicial-header h2 {
+                font-size: 26px;
+            }
+
+            .opcion-icono {
+                width: 70px;
+                height: 70px;
+            }
+
+            .opcion-icono i {
+                font-size: 32px;
+            }
+        }
+
+        /* Efecto hover adicional para toda la opción */
+        .menu-inicial-opcion::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            border-radius: 20px;
+            background: linear-gradient(135deg, transparent, rgba(255, 210, 0, 0.1));
+            opacity: 0;
+            transition: opacity 0.4s ease;
+            pointer-events: none;
+        }
+
+        .menu-inicial-opcion:hover::before {
+            opacity: 1;
+        }
+
+
+        /* Estilos para categorías de suelos */
+        .suelo-categoria {
+            margin-bottom: 25px;
+        }
+
+        .categoria-titulo {
+            font-size: 14px;
+            font-weight: 600;
+            color: var(--primary-color);
+            margin-bottom: 12px;
+            padding-bottom: 6px;
+            border-bottom: 2px solid var(--secondary-color);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .suelos-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(70px, 1fr));
+            /* Reducido de 80px a 70px */
+            gap: 6px;
+            /* Reducido de 8px a 6px */
+        }
+
+        .suelo-opcion {
+            border: 2px solid #eee;
+            border-radius: 4px;
+            padding: 6px;
+            cursor: pointer;
+            transition: all 0.2s;
+            background-color: white;
+            position: relative;
+            min-height: auto;
+        }
+
+        .suelo-opcion:hover {
+            border-color: #0b0b5e;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        .suelo-opcion.selected {
+            border-color: #0b0b5e;
+            background-color: rgba(11, 11, 94, 0.03);
+        }
+
+        .suelo-opcion.selected:after {
+            content: "✓";
+            position: absolute;
+            top: 4px;
+            right: 4px;
+            width: 16px;
+            height: 16px;
+            border-radius: 50%;
+            background-color: #0b0b5e;
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 10px;
+            font-weight: bold;
+        }
+
+        .suelo-opcion img {
+            width: 100%;
+            height: 60px;
+            object-fit: cover;
+            border-radius: 2px;
+            margin-bottom: 4px;
+        }
+
+        .suelo-opcion span {
+            font-size: 10px;
+            text-align: center;
+            display: block;
+            line-height: 1.2;
+            color: #333;
+            font-weight: 500;
+        }
+
+        #customization-menu-suelos {
+            width: 400px !important;
+            /* Forzar mismo ancho que los otros submenús */
+        }
+
+        #customization-menu-suelos .submenu-content {
+            padding: 15px;
+            overflow-y: auto;
+            max-height: calc(100vh - 234px);
+        }
+
+        /* Estilos del scrollbar para webkit */
+        .submenu-content::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        .submenu-content::-webkit-scrollbar-track {
+            background: #f1f1f1;
+            border-radius: 4px;
+        }
+
+        .submenu-content::-webkit-scrollbar-thumb {
+            background: var(--primary-color);
+            border-radius: 4px;
+        }
+
+        .submenu-content::-webkit-scrollbar-thumb:hover {
+            background: var(--accent-color);
+        }
+
+
+        /* Para Firefox */
+        .submenu-content {
+            scrollbar-width: thin;
+            scrollbar-color: var(--primary-color) #f1f1f1;
+        }
+
+        /* Ajustes para móviles */
+        @media (max-width: 992px) {
+            #customization-menu-suelos {
+                width: 350px;
+                /* Mantener consistencia */
+            }
+        }
+
+        @media (max-width: 768px) {
+
+            .customization-menu-level-2,
+            #customization-menu-suelos {
+                width: 100%;
+                height: 100vh;
+            }
+
+            .submenu-content {
+                max-height: calc(100vh - 100px);
+            }
+        }
+
+        /* Placeholder para imágenes no encontradas */
+        img[src*="placeholder-suelo"] {
+            background: linear-gradient(45deg, #f0f0f0 25%, #e0e0e0 25%, #e0e0e0 50%, #f0f0f0 50%, #f0f0f0 75%, #e0e0e0 75%, #e0e0e0);
+            background-size: 20px 20px;
+        }
+
+
+        .menu-inicial-separador {
+            width: 150px;
+            height: 2px;
+            background: linear-gradient(90deg,
+                    transparent 0%,
+                    #ffd200 20%,
+                    #ffd200 80%,
+                    transparent 100%);
+            margin: 0 auto 20px;
+            /* Mismo margen arriba y abajo: 20px */
+            opacity: 0.8;
+            animation: pulseSeparador 3s ease-in-out infinite;
+        }
+
+        /* Animación sutil opcional */
+        @keyframes pulseSeparador {
+
+            0%,
+            100% {
+                opacity: 0.8;
+            }
+
+            50% {
+                opacity: 1;
+            }
+        }
+
+        .menu-inicial-separador {
+            animation: pulseSeparador 3s ease-in-out infinite;
+        }
+
+
+
+        /* Estilos para el sistema de paredes */
+        .paredes-modelo-selector {
+            margin-bottom: 20px;
+        }
+
+        .modelos-grid {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 4px;
+            /* Reducido de 8px a 4px */
+        }
+
+        .modelo-item {
+            border: 2px solid #eee;
+            border-radius: 4px;
+            /* Reducido de 6px a 4px */
+            padding: 8px 12px;
+            /* Reducido de 12px 15px a 8px 12px */
+            cursor: pointer;
+            transition: all 0.2s;
+            background-color: white;
+            text-align: center;
+            font-weight: 500;
+            position: relative;
+            font-size: 13px;
+            /* NUEVO: texto más pequeño */
+        }
+
+        .modelo-item:hover {
+            border-color: #0b0b5e;
+            background-color: rgba(11, 11, 94, 0.02);
+        }
+
+        .modelo-item.selected {
+            border-color: #0b0b5e;
+            background-color: rgba(11, 11, 94, 0.05);
+            color: #0b0b5e;
+        }
+
+        .modelo-item.selected:after {
+            content: "✓";
+            position: absolute;
+            top: 6px;
+            /* Reducido de 8px a 6px */
+            right: 6px;
+            /* Reducido de 8px a 6px */
+            width: 16px;
+            /* Reducido de 18px a 16px */
+            height: 16px;
+            /* Reducido de 18px a 16px */
+            border-radius: 50%;
+            background-color: #0b0b5e;
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 10px;
+            /* Reducido de 12px a 10px */
+            font-weight: bold;
+        }
+
+        .pared-categoria {
+            margin-bottom: 25px;
+        }
+
+        .paredes-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(70px, 1fr));
+            /* Mismo que suelos */
+            gap: 6px;
+            /* Mismo que suelos */
+        }
+
+        .pared-opcion {
+            border: 2px solid #eee;
+            border-radius: 4px;
+            padding: 8px;
+            cursor: pointer;
+            transition: all 0.2s;
+            background-color: white;
+            position: relative;
+            min-height: auto;
+        }
+
+        .pared-opcion:hover {
+            border-color: #0b0b5e;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        .pared-opcion.selected {
+            border-color: #0b0b5e;
+            background-color: rgba(11, 11, 94, 0.03);
+        }
+
+        .pared-opcion.selected:after {
+            content: "✓";
+            position: absolute;
+            top: 4px;
+            right: 4px;
+            width: 16px;
+            height: 16px;
+            border-radius: 50%;
+            background-color: #0b0b5e;
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 10px;
+            font-weight: bold;
+        }
+
+        .pared-opcion img {
+            width: 100%;
+            height: 60px;
+            /* Mismo que suelos */
+            object-fit: cover;
+            border-radius: 2px;
+            margin-bottom: 4px;
+            /* Mismo que suelos */
+        }
+
+        .pared-opcion span {
+            font-size: 11px;
+            text-align: center;
+            display: block;
+            line-height: 1.2;
+            color: #333;
+            font-weight: 500;
+        }
+
+        #customization-menu-paredes {
+            width: 400px !important;
+            /* Forzar mismo ancho que los otros submenús */
+        }
+
+        @media (max-width: 992px) {
+            #customization-menu-paredes {
+                width: 350px;
+                /* Mantener consistencia */
+            }
+        }
+
+        @media (max-width: 768px) {
+
+            .customization-menu-level-2,
+            #customization-menu-paredes {
+                width: 100%;
+                height: 100vh;
+            }
+        }
+
+        /* Indicador visual del modo actual */
+        #top-menu-modo-button.modo-sustitucion::after {
+            content: "(Sustitución)";
+            font-size: 11px;
+            opacity: 0.7;
+            margin-left: 4px;
+        }
+
+        #top-menu-modo-button.modo-decoracion::after {
+            content: "(Decoración)";
+            font-size: 11px;
+            opacity: 0.7;
+            margin-left: 4px;
+        }
+
+        /* Estilos para el selector de paredes - versión más discreta y diferenciada */
+        .paredes-selector-container {
+            margin: 15px 0 20px 0;
+            background-color: #f9fafb;
+            padding: 10px 8px;
+            border-radius: 4px;
+            border: 1px solid #e5e7eb;
+            position: relative;
+        }
+
+        .paredes-selector-container::before {
+            content: '';
+            position: absolute;
+            left: 15px;
+            right: 15px;
+            top: -1px;
+            height: 1px;
+            background: linear-gradient(90deg, transparent, #ddd 20%, #ddd 80%, transparent);
+        }
+
+        .paredes-selector-container .categoria-titulo {
+            font-size: 10px;
+            font-weight: 500;
+            color: #888;
+            margin-bottom: 8px;
+            text-transform: none;
+            letter-spacing: 0.3px;
+            border: none;
+            padding: 0;
+            text-align: center;
+            font-style: italic;
+        }
+
+        .paredes-botones-selector {
+            display: flex;
+            gap: 4px;
+            justify-content: center;
+            padding: 0 10px;
+        }
+
+        .pared-selector-btn {
+            border: 1.5px solid #ddd;
+            border-radius: 4px;
+            padding: 6px 8px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            background: white;
+            text-align: center;
+            position: relative;
+            flex: 1;
+            max-width: 75px;
+            opacity: 0.8;
+        }
+
+        .pared-selector-btn:hover {
+            border-color: #0b0b5e;
+            background-color: rgba(11, 11, 94, 0.02);
+            opacity: 1;
+        }
+
+        .pared-selector-btn.selected {
+            border-color: #0b0b5e;
+            background-color: rgba(11, 11, 94, 0.05);
+            opacity: 1;
+            box-shadow: 0 1px 3px rgba(11, 11, 94, 0.1);
+        }
+
+
+        .pared-selector-icon {
+            width: 30px;
+            height: 28px;
+            margin: 0 auto 4px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .pared-selector-btn span {
+            font-size: 10px;
+            font-weight: 400;
+            color: #666;
+            display: block;
+            line-height: 1;
+        }
+
+        .pared-selector-btn.selected span {
+            color: #0b0b5e;
+            font-weight: 500;
+        }
+
+        /* Iconos más sutiles para las paredes */
+        .icon-todas-paredes {
+            width: 26px;
+            height: 20px;
+            position: relative;
+            display: flex;
+            gap: 1px;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .mini-pared {
+            width: 7px;
+            height: 16px;
+            background-color: #f0f0f0;
+            border: 1px solid #bbb;
+        }
+
+        .mini-pared-izq {
+            transform: perspective(30px) rotateY(20deg);
+        }
+
+        .mini-pared-centro {
+            background-color: #e8e8e8;
+        }
+
+        .mini-pared-der {
+            transform: perspective(30px) rotateY(-20deg);
+        }
+
+        .icon-pared-individual {
+            width: 14px;
+            height: 20px;
+            background-color: #f0f0f0;
+            border: 1px solid #bbb;
+            position: relative;
+        }
+
+        .icon-pared-izq {
+            transform: perspective(30px) rotateY(25deg);
+            margin-left: 4px;
+        }
+
+        .icon-pared-centro {
+            /* Sin transformación */
+        }
+
+        .icon-pared-der {
+            transform: perspective(30px) rotateY(-25deg);
+            margin-right: 4px;
+        }
+
+        /* Colores azules sutiles cuando está seleccionado */
+        .pared-selector-btn.selected .mini-pared,
+        .pared-selector-btn.selected .icon-pared-individual {
+            background-color: #0b0b5e !important;
+            border-color: #0b0b5e;
+        }
+
+        /* AÑADIR ESTA NUEVA REGLA AQUÍ */
+        .pared-selector-btn:hover .mini-pared,
+        .pared-selector-btn:hover .icon-pared-individual {
+            background-color: rgba(11, 11, 94, 0.3);
+            border-color: #0b0b5e;
+        }
+
+        .pared-materiales-section {
+            margin-top: 0;
+        }
+
+        /* Hacer que el título principal destaque más */
+        .pared-materiales-section>.categoria-titulo:first-child {
+            font-size: 14px;
+            font-weight: 600;
+            color: #0b0b5e;
+            margin-bottom: 15px;
+            padding-bottom: 8px;
+            border-bottom: 2px solid #ffd200;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        /* Grid de materiales con mayor separación visual */
+        .paredes-grid {
+            background-color: white;
+            padding: 10px;
+            border-radius: 6px;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+        }
+
+
+
+    </style>
+    <link rel="icon" href="img/favicon.ico" type="image/x-icon">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/TransformControls.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/loaders/OBJLoader.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/loaders/MTLLoader.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/objects/Reflector.js"></script>
+    <!-- Scripts para post-procesamiento y bloom -->
+    <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/postprocessing/EffectComposer.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/postprocessing/RenderPass.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/postprocessing/ShaderPass.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/postprocessing/UnrealBloomPass.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/shaders/CopyShader.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/shaders/LuminosityHighPassShader.js"></script>
+    <!-- En tu HTML, después de cargar Three.js -->
+    <script>
+        // Definir Reflector inline si no está disponible
+        THREE.Reflector = function (geometry, options) {
+            THREE.Mesh.call(this, geometry);
+            this.type = 'Reflector';
+            const scope = this;
+            options = options || {};
+            const color = (options.color !== undefined) ? new THREE.Color(options.color) : new THREE.Color(0x7F7F7F);
+            const textureWidth = options.textureWidth || 512;
+            const textureHeight = options.textureHeight || 512;
+            const clipBias = options.clipBias || 0;
+            const shader = options.shader || THREE.Reflector.ReflectorShader;
+
+            const reflectorPlane = new THREE.Plane();
+            const normal = new THREE.Vector3();
+            const reflectorWorldPosition = new THREE.Vector3();
+            const cameraWorldPosition = new THREE.Vector3();
+            const rotationMatrix = new THREE.Matrix4();
+            const lookAtPosition = new THREE.Vector3(0, 0, - 1);
+            const clipPlane = new THREE.Vector4();
+            const view = new THREE.Vector3();
+            const target = new THREE.Vector3();
+            const q = new THREE.Vector4();
+            const textureMatrix = new THREE.Matrix4();
+            const virtualCamera = new THREE.PerspectiveCamera();
+
+            const renderTarget = new THREE.WebGLRenderTarget(textureWidth, textureHeight);
+            const material = new THREE.ShaderMaterial({
+                uniforms: THREE.UniformsUtils.clone(shader.uniforms),
+                fragmentShader: shader.fragmentShader,
+                vertexShader: shader.vertexShader
+            });
+
+            material.uniforms['tDiffuse'].value = renderTarget.texture;
+            material.uniforms['color'].value = color;
+            material.uniforms['textureMatrix'].value = textureMatrix;
+
+            this.material = material;
+            this.onBeforeRender = function (renderer, scene, camera) {
+                reflectorWorldPosition.setFromMatrixPosition(scope.matrixWorld);
+                cameraWorldPosition.setFromMatrixPosition(camera.matrixWorld);
+                rotationMatrix.extractRotation(scope.matrixWorld);
+                normal.set(0, 0, 1);
+                normal.applyMatrix4(rotationMatrix);
+                view.subVectors(reflectorWorldPosition, cameraWorldPosition);
+                if (view.dot(normal) > 0) return;
+                view.reflect(normal).negate();
+                view.add(reflectorWorldPosition);
+                rotationMatrix.extractRotation(camera.matrixWorld);
+                lookAtPosition.set(0, 0, - 1);
+                lookAtPosition.applyMatrix4(rotationMatrix);
+                lookAtPosition.add(cameraWorldPosition);
+                target.subVectors(reflectorWorldPosition, lookAtPosition);
+                target.reflect(normal).negate();
+                target.add(reflectorWorldPosition);
+                virtualCamera.position.copy(view);
+                virtualCamera.up.set(0, 1, 0);
+                virtualCamera.up.applyMatrix4(rotationMatrix);
+                virtualCamera.up.reflect(normal);
+                virtualCamera.lookAt(target);
+                virtualCamera.far = camera.far;
+                virtualCamera.updateMatrixWorld();
+                virtualCamera.projectionMatrix.copy(camera.projectionMatrix);
+                textureMatrix.set(
+                    0.5, 0.0, 0.0, 0.5,
+                    0.0, 0.5, 0.0, 0.5,
+                    0.0, 0.0, 0.5, 0.5,
+                    0.0, 0.0, 0.0, 1.0
+                );
+                textureMatrix.multiply(virtualCamera.projectionMatrix);
+                textureMatrix.multiply(virtualCamera.matrixWorldInverse);
+                textureMatrix.multiply(scope.matrixWorld);
+                reflectorPlane.setFromNormalAndCoplanarPoint(normal, reflectorWorldPosition);
+                reflectorPlane.applyMatrix4(virtualCamera.matrixWorldInverse);
+                clipPlane.set(reflectorPlane.normal.x, reflectorPlane.normal.y, reflectorPlane.normal.z, reflectorPlane.constant);
+                const projectionMatrix = virtualCamera.projectionMatrix;
+                q.x = (Math.sign(clipPlane.x) + projectionMatrix.elements[8]) / projectionMatrix.elements[0];
+                q.y = (Math.sign(clipPlane.y) + projectionMatrix.elements[9]) / projectionMatrix.elements[5];
+                q.z = - 1.0;
+                q.w = (1.0 + projectionMatrix.elements[10]) / projectionMatrix.elements[14];
+                clipPlane.multiplyScalar(2.0 / clipPlane.dot(q));
+                projectionMatrix.elements[2] = clipPlane.x;
+                projectionMatrix.elements[6] = clipPlane.y;
+                projectionMatrix.elements[10] = clipPlane.z + 1.0 - clipBias;
+                projectionMatrix.elements[14] = clipPlane.w;
+                renderTarget.texture.encoding = renderer.outputEncoding;
+                scope.visible = false;
+                const currentRenderTarget = renderer.getRenderTarget();
+                const currentXrEnabled = renderer.xr.enabled;
+                const currentShadowAutoUpdate = renderer.shadowMap.autoUpdate;
+                renderer.xr.enabled = false;
+                renderer.shadowMap.autoUpdate = false;
+                renderer.setRenderTarget(renderTarget);
+                renderer.clear();
+                renderer.render(scene, virtualCamera);
+                renderer.xr.enabled = currentXrEnabled;
+                renderer.shadowMap.autoUpdate = currentShadowAutoUpdate;
+                renderer.setRenderTarget(currentRenderTarget);
+                scope.visible = true;
+            };
+        };
+
+        THREE.Reflector.prototype = Object.create(THREE.Mesh.prototype);
+        THREE.Reflector.prototype.constructor = THREE.Reflector;
+
+        THREE.Reflector.ReflectorShader = {
+            uniforms: {
+                'color': { value: null },
+                'tDiffuse': { value: null },
+                'textureMatrix': { value: null }
+            },
+            vertexShader: `
+                uniform mat4 textureMatrix;
+                varying vec4 vUv;
+                void main() {
+                    vUv = textureMatrix * vec4( position, 1.0 );
+                    gl_Position = projectionMatrix * modelViewMatrix * vec4( position, 1.0 );
+                }
+            `,
+            fragmentShader: `
+                uniform vec3 color;
+                uniform sampler2D tDiffuse;
+                varying vec4 vUv;
+                float blendOverlay( float base, float blend ) {
+                    return( base < 0.5 ? ( 2.0 * base * blend ) : ( 1.0 - 2.0 * ( 1.0 - base ) * ( 1.0 - blend ) ) );
+                }
+                vec3 blendOverlay( vec3 base, vec3 blend ) {
+                    return vec3( blendOverlay( base.r, blend.r ), blendOverlay( base.g, blend.g ), blendOverlay( base.b, blend.b ) );
+                }
+                void main() {
+                    vec4 base = texture2DProj( tDiffuse, vUv );
+                    gl_FragColor = vec4( blendOverlay( base.rgb, color ), 1.0 );
+                }
+            `
+        };
+    </script>
+    <script>
+        var pdfTitle = 'OPCIONES ELEGIDAS CONFIGURADOR 3D';
+        var pdfBottomTexts = [
+            "Los colores mostrados pueden variar respecto a los reales en función de la configuración del monitor o de las condiciones de impresión.",
+            "En determinadas combinaciones dimensionales, las texturas pueden variar con la realidad."
+        ];
+        var yes = 'Sí';
+        var no = 'No';
+    </script>
+</head>
+
+<body>
+    <div class="wrapper">
+        <!-- Pantalla de carga -->
+        <div id="loading-fullscreen">
+            <div class="loader-container">
+                <div class="loader-circle"></div>
+                <img src="img/ersce-logo.png" alt="ERSCE" class="loader-logo">
+            </div>
+            <div class="loader-text">CARGANDO CONFIGURADOR</div>
+        </div>
+
+        <!-- Menú de selección inicial -->
+        <div id="menu-inicial" style="display: none;">
+            <div class="menu-inicial-container">
+                <div class="menu-inicial-header">
+                    <img src="img/ersce-logo-3.png" alt="ERSCE" class="menu-inicial-logo">
+                    <p>SELECCIONE EL TIPO DE SERVICIO</p>
+                </div>
+                <div class="menu-inicial-opciones">
+                    <div class="menu-inicial-opcion" data-modo="sustitucion">
+                        <div class="opcion-icono">
+                            <i class="fas fa-sync-alt"></i>
+                        </div>
+                        <h3>Sustitución de cabinas</h3>
+                        <p>Renovación completa de cabinas existentes</p>
+                    </div>
+                    <div class="menu-inicial-opcion" data-modo="decoracion">
+                        <div class="opcion-icono">
+                            <i class="fas fa-paint-brush"></i>
+                        </div>
+                        <h3>Decoración de cabinas</h3>
+                        <p>Personalización estética de cabinas existentes</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Header -->
+        <header class="header">
+            <div class="fixed-width">
+                <div class="header-inner">
+                    <div class="logo">
+                        <img src="img/ersce-logo-2.png" alt="ERSCE">
+                        <h1>CONFIGURADOR DE ASCENSORES <span class="text-yellow">3D</span></h1>
+                    </div>
+                    <div class="header-actions">
+                        <!-- Posibles acciones adicionales del header -->
+                    </div>
+                </div>
+            </div>
+        </header>
+
+        <!-- Top Menu Bar -->
+        <div class="top-menu-bar">
+            <div class="fixed-width">
+                <div class="top-menu-content">
+                    <ul>
+                        <li style="flex-basis: 120px;"></li>
+                        <li class="spacer"></li>
+                        <li>
+                            <span id="top-menu-camera-button"><i class="fas fa-camera"></i> Vistas</span>
+                            <ul>
+                                <li><span id="top-menu-camera-0"><i class="fas fa-eye"></i> Vista Principal</span></li>
+                                <li><span id="top-menu-camera-1"><i class="fas fa-door-open"></i> Vista Interior</span>
+                                </li>
+                                <li><span id="top-menu-camera-2"><i class="fas fa-arrow-left"></i> Vista
+                                        Izquierda</span></li>
+                                <li><span id="top-menu-camera-3"><i class="fas fa-arrow-right"></i> Vista Derecha</span>
+                                </li>
+                            </ul>
+                        </li>
+                        <li class="spacer"></li>
+                        <li>
+                            <span id="top-menu-restart-button"><i class="fas fa-redo-alt"></i> Reiniciar</span>
+                        </li>
+                        <li>
+                            <span id="top-menu-modo-button"><i class="fas fa-exchange-alt"></i> Modo</span>
+                            <ul>
+                                <li><span id="top-menu-modo-sustitucion" data-modo="sustitucion"><i
+                                            class="fas fa-sync-alt"></i>
+                                        Sustitución</span></li>
+                                <li><span id="top-menu-modo-decoracion" data-modo="decoracion"><i
+                                            class="fas fa-paint-brush"></i>
+                                        Decoración</span></li>
+                            </ul>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <div class="content">
+            <!-- Visor 3D - Ocupa toda la pantalla como fondo -->
+            <div id="visor-3d"></div>
+
+            <div class="customization-menu-level-1" id="customization-menu-level-1">
+                <div class="menu-header">
+                    <h2>Personalización</h2>
+                    <p>Configure su ascensor a medida</p>
+                </div>
+                <div class="button-group">
+                    <div class="button" id="customization-menu-dimension-button">
+                        <i class="fas fa-ruler-combined"></i>
+                        01- Dimensiones
+                        <i class="fas fa-chevron-right button-icon-right"></i>
+                    </div>
+                </div>
+                <div class="button-group">
+                    <div class="button" id="customization-menu-entorno-button">
+                        <i class="fas fa-mountain"></i>
+                        02- Entorno
+                        <i class="fas fa-chevron-right button-icon-right"></i>
+                    </div>
+                </div>
+                <div class="button-group">
+                    <div class="button" id="customization-menu-paredes-button">
+                        <img src="img/icons/paredes-icon.png" alt="Paredes">
+                        <span>03- Paredes</span>
+                        <i class="fas fa-chevron-right button-icon-right"></i>
+                    </div>
+                </div>
+                <div class="button-group">
+                    <div class="button" id="customization-menu-bajotechos-button">
+                        <img src="img/icons/techo-icon.png" alt="Techo">
+                        04- Techo
+                        <i class="fas fa-chevron-right button-icon-right"></i>
+                    </div>
+                </div>
+                <div class="button-group">
+                    <div class="button" id="customization-menu-suelos-button">
+                        <img src="img/icons/suelo-icon.png" alt="Techo">
+                        05- Suelo
+                        <i class="fas fa-chevron-right button-icon-right"></i>
+                    </div>
+                </div>
+                <div class="button-group">
+                    <div class="button" id="customization-menu-espejos-button">
+                        <img src="img/icons/espejo-icon.png" alt="Espejos">
+                        06- Espejos
+                        <i class="fas fa-chevron-right button-icon-right"></i>
+                    </div>
+                </div>
+                <div class="button-group">
+                    <div class="button" id="customization-menu-botoneras-button">
+                        <i class="fas fa-grip-vertical"></i>
+                        07- Botonera
+                        <i class="fas fa-chevron-right button-icon-right"></i>
+                    </div>
+                </div>
+                <div class="button-group">
+                    <div class="button" id="customization-menu-pasamanos-button">
+                        <i class="fas fa-minus"></i>
+                        08- Pasamanos
+                        <i class="fas fa-chevron-right button-icon-right"></i>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Menús de personalización Nivel 2 -->
+
+
+            <!-- Menú de dimensiones -->
+            <div class="customization-menu-level-2" id="customization-menu-dimension">
+                <div class="submenu-header">
+                    <h3><i class="fas fa-ruler-combined"></i> Dimensiones</h3>
+                    <p>Configure el tamaño de su cabina</p>
+                </div>
+                <div class="submenu-content">
+                    <p>Introduzca las dimensiones exactas para su proyecto. Los valores se ajustarán automáticamente
+                        dentro de los
+                        límites permitidos.</p>
+
+                    <div class="dimension-controls">
+                        <div style="width: 100%;">
+                            <label for="emesa-anchura"
+                                style="display: flex; justify-content: space-between; align-items: center;">
+                                <span>Ancho:</span>
+                                <span style="font-size: 11px; color: #999; font-weight: normal;">(650-1600 mm)</span>
+                            </label>
+                            <div class="dimension-input-group">
+                                <input type="text" id="emesa-anchura" value="1100" min="650" max="1600"
+                                    autocomplete="off">
+                                <span>mm</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="dimension-controls">
+                        <div style="width: 100%;">
+                            <label for="emesa-profundidad"
+                                style="display: flex; justify-content: space-between; align-items: center;">
+                                <span>Profundidad:</span>
+                                <span style="font-size: 11px; color: #999; font-weight: normal;">(650-2100 mm)</span>
+                            </label>
+                            <div class="dimension-input-group">
+                                <input type="text" id="emesa-profundidad" value="1400" min="650" max="2100"
+                                    autocomplete="off">
+                                <span>mm</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="input-actions">
+                        <button id="aplicar-dimensiones" class="button">
+                            <i class="fas fa-check"></i> Aplicar
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Menú de entorno -->
+            <div class="customization-menu-level-2" id="customization-menu-entorno">
+                <div class="submenu-header">
+                    <h3><i class="fas fa-mountain"></i> Entorno</h3>
+                    <p>Personalice el ambiente donde se muestra su ascensor</p>
+                </div>
+                <div class="submenu-content">
+                    <div class="customization-grid">
+                        <div class="option-item selected" data-entorno="oficina">
+                            <img src="img/entorno-oficina.png" alt="Oficina">
+                            <span>Oficina</span>
+                        </div>
+                        <div class="option-item" data-entorno="hotel">
+                            <img src="img/entorno-hotel.png" alt="Hotel">
+                            <span>Hotel</span>
+                        </div>
+                        <div class="option-item" data-entorno="comercial">
+                            <img src="img/entorno-comercial.png" alt="Comercial">
+                            <span>Centro Comercial</span>
+                        </div>
+                        <div class="option-item" data-entorno="residencial">
+                            <img src="img/entorno-residencial.png" alt="Residencial">
+                            <span>Residencial</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Menú de suelos -->
+            <div class="customization-menu-level-2" id="customization-menu-suelos">
+                <div class="submenu-header">
+                    <h3><img src="img/icons/suelo-icon-white.png" alt="Suelo"
+                            style="width: 20px; height: 20px; margin-right: 10px; vertical-align: middle;"> Suelo</h3>
+                    <p>Seleccione el material y acabado del suelo</p>
+                </div>
+                <div class="submenu-content" id="suelos-content">
+                    <!-- El contenido se generará dinámicamente según el modo seleccionado -->
+                </div>
+            </div>
+
+            <!-- Menú de bajotechos -->
+            <div class="customization-menu-level-2" id="customization-menu-bajotechos">
+                <div class="submenu-header">
+                    <h3><img src="img/icons/techo-icon-white.png" alt="Techo"
+                            style="width: 20px; height: 20px; margin-right: 10px; vertical-align: middle;"> Techo</h3>
+                    <p>Seleccione el tipo de iluminación del techo</p>
+                </div>
+                <div class="submenu-content" id="bajotechos-content">
+                    <!-- El contenido se generará dinámicamente según el modo seleccionado -->
+                </div>
+            </div>
+
+            <!-- Menú de paredes -->
+            <div class="customization-menu-level-2" id="customization-menu-paredes">
+                <div class="submenu-header">
+                    <h3><img src="img/icons/paredes-icon-white.png" alt="Paredes"
+                            style="width: 20px; height: 20px; margin-right: 10px; vertical-align: middle;"> Paredes</h3>
+                    <p>Seleccione el modelo y material de las paredes</p>
+                </div>
+                <div class="submenu-content" id="paredes-content">
+                    <!-- El contenido se generará dinámicamente según el modo seleccionado -->
+                </div>
+            </div>
+
+            <!-- Menú de espejos -->
+            <div class="customization-menu-level-2" id="customization-menu-espejos">
+                <div class="submenu-header">
+                    <h3><img src="img/icons/espejo-icon_white.png" alt="Espejos"
+                            style="width: 20px; height: 20px; margin-right: 10px; vertical-align: middle;"> Espejos</h3>
+                    <p>Seleccione el tipo y ubicación de los espejos</p>
+                </div>
+                <div class="submenu-content">
+                    <!-- ESPEJO FONDO -->
+                    <!-- ESPEJO FONDO -->
+                    <div class="espejo-section-title"
+                        style="display: flex; align-items: center; font-size: 14px; font-weight: 600; color: #0b0b5e; margin: 10px 0 15px; padding-bottom: 8px; border-bottom: 2px solid #ffd200; padding-left: 10px;">
+                        <img src="img/icons/center.png" alt="Fondo"
+                            style="width: 24px; height: 24px; margin-right: 10px;">
+                        <span>ESPEJO FONDO</span>
+                    </div>
+                    <div class="espejo-options-container">
+                        <table style="border-spacing: 6px; border-collapse: separate; margin-left: -6px;">
+                            <tr>
+                                <td>
+                                    <div class="espejo-item" data-espejo-fondo="no"
+                                        style="display: inline-block; border: 3px solid #ddd; border-radius: 4px; padding: 4px; cursor: pointer; background: white; position: relative; opacity: 0.6; transition: all 0.3s;">
+                                        <img src="img/icons/espejos/espejo_no.png" alt="Sin espejo"
+                                            style="display: block;">
+                                    </div>
+                                </td>
+                                <td>
+                                    <div class="espejo-item selected" data-espejo-fondo="medio"
+                                        style="display: inline-block; border: 3px solid #0b0b5e; border-radius: 4px; padding: 4px; cursor: pointer; background: white; position: relative; opacity: 1; transition: all 0.3s;">
+                                        <img src="img/icons/espejos/espejo_medio.png" alt="Medio"
+                                            style="display: block;">
+                                        <div
+                                            style="content: '✓'; position: absolute; top: 5px; right: 5px; width: 20px; height: 20px; border-radius: 50%; background-color: #0b0b5e; color: white; display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: bold;">
+                                            ✓</div>
+                                    </div>
+                                </td>
+                                <td>
+                                    <div class="espejo-item" data-espejo-fondo="largo"
+                                        style="display: inline-block; border: 3px solid #ddd; border-radius: 4px; padding: 4px; cursor: pointer; background: white; position: relative; opacity: 0.6; transition: all 0.3s;">
+                                        <img src="img/icons/espejos/espejo_largo.png" alt="Largo"
+                                            style="display: block;">
+                                    </div>
+                                </td>
+                                <td>
+                                    <div class="espejo-item" data-espejo-fondo="completo"
+                                        style="display: inline-block; border: 3px solid #ddd; border-radius: 4px; padding: 4px; cursor: pointer; background: white; position: relative; opacity: 0.6; transition: all 0.3s;">
+                                        <img src="img/icons/espejos/espejo_completo.png" alt="Completo"
+                                            style="display: block;">
+                                    </div>
+                                </td>
+                                <td>
+                                    <div class="espejo-item" data-espejo-fondo="columna"
+                                        style="display: inline-block; border: 3px solid #ddd; border-radius: 4px; padding: 4px; cursor: pointer; background: white; position: relative; opacity: 0.6; transition: all 0.3s;">
+                                        <img src="img/icons/espejos/espejo_columna.png" alt="Columna"
+                                            style="display: block;">
+                                    </div>
+                                </td>
+                            </tr>
+                        </table>
+                    </div>
+
+                    <!-- ESPEJO LATERAL -->
+                    <div class="espejo-section-title"
+                        style="display: flex; align-items: center; font-size: 14px; font-weight: 600; color: #0b0b5e; margin: 20px 0 15px; padding-bottom: 8px; border-bottom: 2px solid #ffd200; padding-left: 10px;">
+                        <img src="img/icons/right.png" alt="Lateral"
+                            style="width: 24px; height: 24px; margin-right: 10px;">
+                        <span>ESPEJO LATERAL</span>
+                    </div>
+                    <div class="espejo-options-container">
+                        <table style="border-spacing: 6px; border-collapse: separate; margin-left: -6px;">
+                            <tr>
+                                <td>
+                                    <div class="espejo-item selected" data-espejo-lateral="no"
+                                        style="display: inline-block; border: 3px solid #0b0b5e; border-radius: 4px; padding: 4px; cursor: pointer; background: white; position: relative; opacity: 1; transition: all 0.3s;">
+                                        <img src="img/icons/espejos/espejo_no.png" alt="Sin espejo"
+                                            style="display: block;">
+                                        <div
+                                            style="content: '✓'; position: absolute; top: 5px; right: 5px; width: 20px; height: 20px; border-radius: 50%; background-color: #0b0b5e; color: white; display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: bold;">
+                                            ✓</div>
+                                    </div>
+                                </td>
+                                <td>
+                                    <div class="espejo-item" data-espejo-lateral="medio"
+                                        style="display: inline-block; border: 3px solid #ddd; border-radius: 4px; padding: 4px; cursor: pointer; background: white; position: relative; opacity: 0.6; transition: all 0.3s;">
+                                        <img src="img/icons/espejos/espejo_medio.png" alt="Medio"
+                                            style="display: block;">
+                                    </div>
+                                </td>
+                                <td>
+                                    <div class="espejo-item" data-espejo-lateral="largo"
+                                        style="display: inline-block; border: 3px solid #ddd; border-radius: 4px; padding: 4px; cursor: pointer; background: white; position: relative; opacity: 0.6; transition: all 0.3s;">
+                                        <img src="img/icons/espejos/espejo_largo.png" alt="Largo"
+                                            style="display: block;">
+                                    </div>
+                                </td>
+                                <td>
+                                    <div class="espejo-item" data-espejo-lateral="completo"
+                                        style="display: inline-block; border: 3px solid #ddd; border-radius: 4px; padding: 4px; cursor: pointer; background: white; position: relative; opacity: 0.6; transition: all 0.3s;">
+                                        <img src="img/icons/espejos/espejo_completo.png" alt="Completo"
+                                            style="display: block;">
+                                    </div>
+                                </td>
+                                <td>
+                                    <div class="espejo-item" data-espejo-lateral="columna"
+                                        style="display: inline-block; border: 3px solid #ddd; border-radius: 4px; padding: 4px; cursor: pointer; background: white; position: relative; opacity: 0.6; transition: all 0.3s;">
+                                        <img src="img/icons/espejos/espejo_columna.png" alt="Columna"
+                                            style="display: block;">
+                                    </div>
+                                </td>
+                            </tr>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Menú de botoneras -->
+            <div class="customization-menu-level-2" id="customization-menu-botoneras">
+                <div class="submenu-header">
+                    <h3><i class="fas fa-grip-vertical"></i> Botonera</h3>
+                    <p>Seleccione el tipo de botonera</p>
+                </div>
+                <div class="submenu-content">
+                    <div class="botonera-section-title"
+                        style="display: flex; align-items: center; font-size: 14px; font-weight: 600; color: #0b0b5e; margin: 10px 0 15px; padding-bottom: 8px; border-bottom: 2px solid #ffd200; padding-left: 10px;">
+                        <span>TIPO DE BOTONERA</span>
+                    </div>
+                    <div class="botonera-options-container">
+                        <table style="border-spacing: 10px; border-collapse: separate; margin: 0 auto;">
+                            <tr>
+                                <!-- Botonera Columna -->
+                                <td>
+                                    <div class="botonera-item selected" data-botonera="columna"
+                                        style="display: inline-block; border: 3px solid #0b0b5e; border-radius: 4px; padding: 20px 25px; cursor: pointer; background: white; position: relative; opacity: 1; transition: all 0.3s; text-align: center; min-width: 140px;">
+                                        <div
+                                            style="position: absolute; top: 5px; right: 5px; width: 20px; height: 20px; border-radius: 50%; background-color: #0b0b5e; color: white; display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: bold;">
+                                            ✓</div>
+                                        <div
+                                            style="width: 70px; height: 70px; margin: 0 auto 12px; background-color: #f5f7fa; border-radius: 8px; display: flex; align-items: center; justify-content: center;">
+                                            <div
+                                                style="width: 20px; height: 50px; background-color: #0b0b5e; border-radius: 2px;">
+                                            </div>
+                                        </div>
+                                        <div
+                                            style="font-size: 14px; font-weight: 600; color: #0b0b5e; margin-bottom: 5px; letter-spacing: 0.5px;">
+                                            COLUMNA</div>
+                                        <div style="font-size: 13px; color: #666;">Altura completa</div>
+                                    </div>
+                                </td>
+
+                                <!-- Botonera Placa -->
+                                <td>
+                                    <div class="botonera-item" data-botonera="placa"
+                                        style="display: inline-block; border: 3px solid #ddd; border-radius: 4px; padding: 20px 25px; cursor: pointer; background: white; position: relative; opacity: 0.6; transition: all 0.3s; text-align: center; min-width: 140px;">
+                                        <div
+                                            style="width: 70px; height: 70px; margin: 0 auto 12px; background-color: #f5f7fa; border-radius: 8px; display: flex; align-items: center; justify-content: center;">
+                                            <div
+                                                style="width: 20px; height: 30px; background-color: #0b0b5e; border-radius: 2px;">
+                                            </div>
+                                        </div>
+                                        <div
+                                            style="font-size: 14px; font-weight: 600; color: #0b0b5e; margin-bottom: 5px; letter-spacing: 0.5px;">
+                                            PLACA</div>
+                                        <div style="font-size: 13px; color: #666;">Altura media</div>
+                                    </div>
+                                </td>
+                            </tr>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Menú de pasamanos -->
+            <div class="customization-menu-level-2" id="customization-menu-pasamanos">
+                <div class="submenu-header">
+                    <h3><i class="fas fa-minus"></i> Pasamanos</h3>
+                    <p>Configure la ubicación de los pasamanos</p>
+                </div>
+                <div class="submenu-content">
+                    <div class="pasamanos-section-title"
+                        style="display: flex; align-items: center; font-size: 14px; font-weight: 600; color: #0b0b5e; margin: 10px 0 15px; padding-bottom: 8px; border-bottom: 2px solid #ffd200; padding-left: 10px;">
+                        <span>SELECCIONE UBICACIÓN</span>
+                    </div>
+                    <div class="pasamanos-options-container">
+                        <table style="border-spacing: 10px; border-collapse: separate; margin: 0 auto;">
+                            <tr>
+                                <!-- Pasamanos Fondo -->
+                                <td>
+                                    <div class="pasamanos-item" data-pasamanos="fondo"
+                                        style="display: inline-block; border: 3px solid #ddd; border-radius: 4px; padding: 20px 25px; cursor: pointer; background: white; position: relative; opacity: 0.6; transition: all 0.3s; text-align: center; min-width: 140px;">
+                                        <div
+                                            style="width: 70px; height: 70px; margin: 0 auto 12px; background-color: #f5f7fa; border-radius: 50%; display: flex; align-items: center; justify-content: center;">
+                                            <img src="img/icons/center.png" alt="Fondo"
+                                                style="width: 40px; height: 40px;">
+                                        </div>
+                                        <div
+                                            style="font-size: 14px; font-weight: 600; color: #0b0b5e; margin-bottom: 12px; letter-spacing: 0.5px;">
+                                            FONDO</div>
+                                        <div style="display: flex; justify-content: center; align-items: center;">
+                                            <input type="checkbox" id="pasamanos-fondo"
+                                                style="width: 22px; height: 22px; accent-color: #0b0b5e; cursor: pointer; margin: 0;">
+                                        </div>
+                                    </div>
+                                </td>
+
+                                <!-- Pasamanos Lateral -->
+                                <td>
+                                    <div class="pasamanos-item" data-pasamanos="lateral"
+                                        style="display: inline-block; border: 3px solid #ddd; border-radius: 4px; padding: 20px 25px; cursor: pointer; background: white; position: relative; opacity: 0.6; transition: all 0.3s; text-align: center; min-width: 140px;">
+                                        <div
+                                            style="width: 70px; height: 70px; margin: 0 auto 12px; background-color: #f5f7fa; border-radius: 50%; display: flex; align-items: center; justify-content: center;">
+                                            <img src="img/icons/right.png" alt="Lateral"
+                                                style="width: 40px; height: 40px;">
+                                        </div>
+                                        <div
+                                            style="font-size: 14px; font-weight: 600; color: #0b0b5e; margin-bottom: 12px; letter-spacing: 0.5px;">
+                                            LATERAL</div>
+                                        <div style="display: flex; justify-content: center; align-items: center;">
+                                            <input type="checkbox" id="pasamanos-lateral"
+                                                style="width: 22px; height: 22px; accent-color: #0b0b5e; cursor: pointer; margin: 0;">
+                                        </div>
+                                    </div>
+                                </td>
+                            </tr>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Panel de detalle (Has elegido las siguientes opciones) -->
+            <div class="detail-menu" id="detail-menu">
+                <div class="deploy-button" id="detail-menu-deploy">
+                    <i class="fas fa-list"></i>
+                </div>
+                <div class="detail-content">
+                    <div class="detail-header">
+                        <h2>Configuración actual</h2>
+                        <p>Resumen de las opciones seleccionadas</p>
+                    </div>
+
+                    <div class="detail-info">
+                        <div class="detail-section">
+                            <div class="detail-section-title">
+                                Dimensiones                      </div>
+                            <div class="detail-item">
+                                <div class="detail-label">Anchura:</div>
+                                <div class="detail-value" id="options-anchura">1100 mm</div>
+                            </div>
+                            <div class="detail-item">
+                                <div class="detail-label">Profundidad:</div>
+                                <div class="detail-value" id="options-profundidad">1400 mm</div>
+                            </div>
+                        </div>
+
+                        <div class="detail-section">
+                            <div class="detail-section-title">
+                                Acabados                      </div>
+                            <div class="detail-item">
+                                <div class="detail-label">Pared izquierda:</div>
+                                <div class="detail-value" id="options-paredIzquierda">acero-pulido</div>
+                            </div>
+                            <div class="detail-item">
+                                <div class="detail-label">Pared frontal:</div>
+                                <div class="detail-value" id="options-paredFrontal">acero-pulido</div>
+                            </div>
+                            <div class="detail-item">
+                                <div class="detail-label">Pared derecha:</div>
+                                <div class="detail-value" id="options-paredDerecha">acero-pulido</div>
+                            </div>
+                            <div class="detail-item">
+                                <div class="detail-label">Techo:</div>
+                                <div class="detail-value" id="options-bajotechos">panel-led</div>
+                            </div>
+                            <div class="detail-item">
+                                <div class="detail-label">Suelo:</div>
+                                <div class="detail-value" id="options-suelo">cerámica</div>
+                            </div>              </div>
+
+                        <div class="detail-section">
+                            <div class="detail-section-title">
+                                Elementos adicionales                      </div>
+                            <div class="detail-item">
+                                <div class="detail-label">Pasamanos fondo:</div>
+                                <div class="detail-value" id="options-pasamanosFondo">No</div>
+                            </div>
+                            <div class="detail-item">
+                                <div class="detail-label">Pasamanos lateral:</div>
+                                <div class="detail-value" id="options-pasamanosLateral">No</div>
+                            </div>
+                            <div class="detail-item">
+                                <div class="detail-label">Botonera (modelo):</div>
+                                <div class="detail-value" id="options-botonera">estándar</div>
+                            </div>
+                            <div class="detail-item">
+                                <div class="detail-label">Espejo frontal:</div>
+                                <div class="detail-value" id="options-espejoFrontal">No</div>
+                            </div>
+                            <div class="detail-item">
+                                <div class="detail-label">Espejo lateral:</div>
+                                <div class="detail-value" id="options-espejoLateral">No</div>
+                            </div>
+                        </div>
+                    </div>
+                    <a href="#" id="generar-pdf" class="button">
+                        <i class="fas fa-file-pdf"></i> Descargar PDF
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+<!-- Popup de carga para PDF -->
+<div id="pdf-loading-popup"
+    style="display: none; position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); background-color: white; padding: 30px 40px; border-radius: 10px; box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3); z-index: 5000; text-align: center; min-width: 280px;">
+    <div style="width: 60px; height: 60px; margin: 0 auto 20px; position: relative;">
+        <div class="loader-circle"
+            style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; border: 4px solid #f3f3f3; border-top: 4px solid #0b0b5e; border-radius: 50%; animation: spin 1s linear infinite;">
+        </div>
+    </div>
+    <h3 style="color: #0b0b5e; margin-bottom: 10px; font-size: 18px;">Generando PDF</h3>
+    <p style="color: #666; font-size: 14px; margin: 0;">Por favor, espere un momento...</p>
+</div>
+
+<!-- Popup de confirmación para reiniciar -->
+<div id="restart-confirmation-popup"
+    style="display: none; position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); background-color: white; padding: 30px 40px; border-radius: 10px; box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3); z-index: 5000; text-align: center; min-width: 350px;">
+    <div
+        style="width: 60px; height: 60px; margin: 0 auto 20px; background-color: rgba(11, 11, 94, 0.1); border-radius: 50%; display: flex; align-items: center; justify-content: center;">
+        <i class="fas fa-exclamation-triangle" style="color: #0b0b5e; font-size: 24px;"></i>
+    </div>
+    <h3 style="color: #0b0b5e; margin-bottom: 15px; font-size: 18px; font-weight: 600;">Confirmar reinicio</h3>
+    <p style="color: #666; font-size: 14px; margin: 0 0 25px 0; line-height: 1.5;">Si procedes a reiniciar, perderás toda la
+        configuración actual y comenzarás de nuevo.</p>
+    <div style="display: flex; gap: 15px; justify-content: center;">
+        <button id="restart-cancel-btn"
+            style="padding: 10px 20px; background-color: #f0f0f0; color: #666; border: none; border-radius: 5px; cursor: pointer; font-size: 14px; font-weight: 500; transition: background-color 0.3s;">
+            Cancelar
+        </button>
+        <button id="restart-confirm-btn"
+            style="padding: 10px 20px; background-color: #0b0b5e; color: white; border: none; border-radius: 5px; cursor: pointer; font-size: 14px; font-weight: 500; transition: background-color 0.3s;">
+            Confirmar reinicio
+        </button>
+    </div>
+</div>
+
+<!-- Scripts -->
+    <script src="js/texturas.js"></script>
+    <script src="js/exportar-pdf.js"></script>
+    <script src="js/modificador-hueco.js"></script>
+    <script>
+        THREE.Reflector = class Reflector extends THREE.Mesh {
+            constructor(geometry, options = {}) {
+                super(geometry);
+                this.type = 'Reflector';
+
+                const scope = this;
+                const color = (options.color !== undefined) ? new THREE.Color(options.color) : new THREE.Color(0x7F7F7F);
+                const textureWidth = options.textureWidth || 512;
+                const textureHeight = options.textureHeight || 512;
+                const clipBias = options.clipBias || 0;
+                const shader = options.shader || Reflector.ReflectorShader;
+
+                const reflectorPlane = new THREE.Plane();
+                const normal = new THREE.Vector3();
+                const reflectorWorldPosition = new THREE.Vector3();
+                const cameraWorldPosition = new THREE.Vector3();
+                const rotationMatrix = new THREE.Matrix4();
+                const lookAtPosition = new THREE.Vector3(0, 0, -1);
+                const clipPlane = new THREE.Vector4();
+                const view = new THREE.Vector3();
+                const target = new THREE.Vector3();
+                const q = new THREE.Vector4();
+                const textureMatrix = new THREE.Matrix4();
+                const virtualCamera = new THREE.PerspectiveCamera();
+
+                const parameters = {
+                    minFilter: THREE.LinearFilter,
+                    magFilter: THREE.LinearFilter,
+                    format: THREE.RGBFormat,
+                    stencilBuffer: false
+                };
+
+                const renderTarget = new THREE.WebGLRenderTarget(textureWidth, textureHeight, parameters);
+
+                if (!THREE.MathUtils.isPowerOfTwo(textureWidth) || !THREE.MathUtils.isPowerOfTwo(textureHeight)) {
+                    renderTarget.texture.generateMipmaps = false;
+                }
+
+                const material = new THREE.ShaderMaterial({
+                    uniforms: THREE.UniformsUtils.clone(shader.uniforms),
+                    fragmentShader: shader.fragmentShader,
+                    vertexShader: shader.vertexShader
+                });
+
+                material.uniforms['tDiffuse'].value = renderTarget.texture;
+                material.uniforms['color'].value = color;
+                material.uniforms['textureMatrix'].value = textureMatrix;
+
+                this.material = material;
+
+                this.onBeforeRender = function (renderer, scene, camera) {
+                    reflectorWorldPosition.setFromMatrixPosition(scope.matrixWorld);
+                    cameraWorldPosition.setFromMatrixPosition(camera.matrixWorld);
+                    rotationMatrix.extractRotation(scope.matrixWorld);
+                    normal.set(0, 0, 1);
+                    normal.applyMatrix4(rotationMatrix);
+                    view.subVectors(reflectorWorldPosition, cameraWorldPosition);
+
+                    if (view.dot(normal) > 0) return;
+
+                    view.reflect(normal).negate();
+                    view.add(reflectorWorldPosition);
+                    rotationMatrix.extractRotation(camera.matrixWorld);
+                    lookAtPosition.set(0, 0, -1);
+                    lookAtPosition.applyMatrix4(rotationMatrix);
+                    lookAtPosition.add(cameraWorldPosition);
+                    target.subVectors(reflectorWorldPosition, lookAtPosition);
+                    target.reflect(normal).negate();
+                    target.add(reflectorWorldPosition);
+
+                    virtualCamera.position.copy(view);
+                    virtualCamera.up.set(0, 1, 0);
+                    virtualCamera.up.applyMatrix4(rotationMatrix);
+                    virtualCamera.up.reflect(normal);
+                    virtualCamera.lookAt(target);
+                    virtualCamera.far = camera.far;
+                    virtualCamera.updateMatrixWorld();
+                    virtualCamera.projectionMatrix.copy(camera.projectionMatrix);
+
+                    textureMatrix.set(
+                        0.5, 0.0, 0.0, 0.5,
+                        0.0, 0.5, 0.0, 0.5,
+                        0.0, 0.0, 0.5, 0.5,
+                        0.0, 0.0, 0.0, 1.0
+                    );
+                    textureMatrix.multiply(virtualCamera.projectionMatrix);
+                    textureMatrix.multiply(virtualCamera.matrixWorldInverse);
+                    textureMatrix.multiply(scope.matrixWorld);
+
+                    reflectorPlane.setFromNormalAndCoplanarPoint(normal, reflectorWorldPosition);
+                    reflectorPlane.applyMatrix4(virtualCamera.matrixWorldInverse);
+                    clipPlane.set(reflectorPlane.normal.x, reflectorPlane.normal.y, reflectorPlane.normal.z, reflectorPlane.constant);
+
+                    const projectionMatrix = virtualCamera.projectionMatrix;
+                    q.x = (Math.sign(clipPlane.x) + projectionMatrix.elements[8]) / projectionMatrix.elements[0];
+                    q.y = (Math.sign(clipPlane.y) + projectionMatrix.elements[9]) / projectionMatrix.elements[5];
+                    q.z = -1.0;
+                    q.w = (1.0 + projectionMatrix.elements[10]) / projectionMatrix.elements[14];
+                    clipPlane.multiplyScalar(2.0 / clipPlane.dot(q));
+
+                    projectionMatrix.elements[2] = clipPlane.x;
+                    projectionMatrix.elements[6] = clipPlane.y;
+                    projectionMatrix.elements[10] = clipPlane.z + 1.0 - clipBias;
+                    projectionMatrix.elements[14] = clipPlane.w;
+
+                    renderTarget.texture.encoding = renderer.outputEncoding;
+
+                    scope.visible = false;
+                    const currentRenderTarget = renderer.getRenderTarget();
+                    const currentXrEnabled = renderer.xr.enabled;
+                    const currentShadowAutoUpdate = renderer.shadowMap.autoUpdate;
+                    renderer.xr.enabled = false;
+                    renderer.shadowMap.autoUpdate = false;
+                    renderer.setRenderTarget(renderTarget);
+                    renderer.state.buffers.depth.setMask(true);
+                    if (renderer.autoClear === false) renderer.clear();
+                    renderer.render(scene, virtualCamera);
+                    renderer.xr.enabled = currentXrEnabled;
+                    renderer.shadowMap.autoUpdate = currentShadowAutoUpdate;
+                    renderer.setRenderTarget(currentRenderTarget);
+
+                    const viewport = camera.viewport;
+                    if (viewport !== undefined) {
+                        renderer.state.viewport(viewport);
+                    }
+
+                    scope.visible = true;
+                };
+
+                this.getRenderTarget = function () {
+                    return renderTarget;
+                };
+            }
+
+            static ReflectorShader = {
+                uniforms: {
+                    'color': { value: null },
+                    'tDiffuse': { value: null },
+                    'textureMatrix': { value: null }
+                },
+                vertexShader: `
+                    uniform mat4 textureMatrix;
+                    varying vec4 vUv;
+                    void main() {
+                        vUv = textureMatrix * vec4( position, 1.0 );
+                        gl_Position = projectionMatrix * modelViewMatrix * vec4( position, 1.0 );
+                    }
+                `,
+                fragmentShader: `
+                    uniform vec3 color;
+                    uniform sampler2D tDiffuse;
+                    varying vec4 vUv;
+
+                    float blendOverlay( float base, float blend ) {
+                        return( base < 0.5 ? ( 2.0 * base * blend ) : ( 1.0 - 2.0 * ( 1.0 - base ) * ( 1.0 - blend ) ) );
+                    }
+
+                    vec3 blendOverlay( vec3 base, vec3 blend ) {
+                        return vec3( blendOverlay( base.r, blend.r ), blendOverlay( base.g, blend.g ), blendOverlay( base.b, blend.b ) );
+                    }
+
+                    void main() {
+                        vec4 base = texture2DProj( tDiffuse, vUv );
+                        gl_FragColor = vec4( blendOverlay( base.rgb, color ), 1.0 );
+                    }
+                `
+            };
+        };
+
+
+        THREE.Reflector.ReflectorShader = {
+            uniforms: {
+                'color': { value: null },
+                'tDiffuse': { value: null },
+                'textureMatrix': { value: null }
+            },
+            vertexShader: `
+                    uniform mat4 textureMatrix;
+                    varying vec4 vUv;
+                    void main() {
+                        vUv = textureMatrix * vec4( position, 1.0 );
+                        gl_Position = projectionMatrix * modelViewMatrix * vec4( position, 1.0 );
+                    }
+                `,
+            fragmentShader: `
+                    uniform vec3 color;
+                    uniform sampler2D tDiffuse;
+                    varying vec4 vUv;
+
+                    float blendOverlay( float base, float blend ) {
+                        return( base < 0.5 ? ( 2.0 * base * blend ) : ( 1.0 - 2.0 * ( 1.0 - base ) * ( 1.0 - blend ) ) );
+                    }
+
+                    vec3 blendOverlay( vec3 base, vec3 blend ) {
+                        return vec3( blendOverlay( base.r, blend.r ), blendOverlay( base.g, blend.g ), blendOverlay( base.b, blend.b ) );
+                    }
+
+                    void main() {
+                        vec4 base = texture2DProj( tDiffuse, vUv );
+                        gl_FragColor = vec4( blendOverlay( base.rgb, color ), 1.0 );
+                    }
+                `
+        };
+    </script>
+    <script src="js/configurador.js"></script>
+
+    <script src="js/visualizador-vertices.js"></script>
+    <script src="js/modo-recorte.js"></script>
+    <script src="js/main.js"></script>
+
+    <script>
+        // Script para gestionar el flujo de inicio
+        document.addEventListener('DOMContentLoaded', function () {
+            // Ocultar inmediatamente la pantalla de carga
+            const loadingScreen = document.getElementById('loading-fullscreen');
+            loadingScreen.style.display = 'none';
+
+            // Mostrar inmediatamente el menú de selección
+            const menuInicial = document.getElementById('menu-inicial');
+            menuInicial.style.display = 'flex';
+            menuInicial.style.opacity = '1';
+            menuInicial.style.visibility = 'visible';
+        });
+
+        // Inicializar todos los tooltips
+        document.addEventListener('DOMContentLoaded', function () {
+            // Gestión de las secciones plegables
+            const collapsibleSections = document.querySelectorAll('.customization-section');
+
+            collapsibleSections.forEach(section => {
+                const header = section.querySelector('.customization-section-header');
+                header.addEventListener('click', () => {
+                    section.classList.toggle('active');
+                });
+            });
+
+            // Animación para elementos al cargar
+            const animatedElements = document.querySelectorAll('.floating-animation');
+            animatedElements.forEach((el, index) => {
+                setTimeout(() => {
+                    el.style.opacity = '1';
+                    el.style.transform = 'translateY(0)';
+                }, 100 * index);
+            });
+        });
+    </script>
+</body>
+
+</html>
